@@ -26,7 +26,7 @@ import { SubscriptionContext } from "../../contexts/SubscriptionContext";
 import { YoutubeContext } from "../../contexts/YoutubeContext";
 import { TVContext } from "../../contexts/TVContext";
 
-import { editSubscription } from "../../api/subscriptions";
+import { editSubscription, deleteSubscription } from "../../api/subscriptions";
 
 import { translate } from "../../utils/translations";
 
@@ -194,6 +194,16 @@ function SubscriptionDetail() {
 		}
 
 		if (groups && !groups.map(g => g.name).includes(group.name)) groups.push(group);
+	}
+
+	async function handleDeleteSubscription(archive) {
+		const response = await deleteSubscription(subscription._id, archive);
+
+		if (response.status === 200) {
+			subscriptionDispatch({ type: "DELETE_SUBSCRIPTION", subscription: response.data });
+
+			handleCloseModal();
+		}
 	}
 
 	function renderTags(value, getTagProps) {
@@ -520,6 +530,16 @@ function SubscriptionDetail() {
 							)}
 						</>
 					)}
+					{subscription && subscription.active ? (
+						<div style={{ display: "flex", justifyContent: "space-evenly", marginTop: "20px" }}>
+							<Button onClick={() => handleDeleteSubscription()} variant="contained" color="primary">
+								{translate("delete")}
+							</Button>
+							<Button onClick={() => handleDeleteSubscription(true)} variant="contained" color="primary">
+								{translate("archive")}
+							</Button>
+						</div>
+					) : null}
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={handleCloseModal} color="primary">

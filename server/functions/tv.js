@@ -91,7 +91,7 @@ const watchedQuery = user => [
 ];
 
 async function getEpisodeNumbers(series, user) {
-	const seriesIds = series.map(s => s.externalId.toString());
+	const seriesIds = series.map(s => s.externalId && s.externalId.toString());
 	const seriesTotals = await Episode.aggregate([
 		{ $match: { seriesId: { $in: seriesIds } } },
 		...watchedQuery(user),
@@ -123,7 +123,7 @@ async function getEpisodeNumbers(series, user) {
 
 	for (const s of series) {
 		if (s.contentType === "tv") {
-			const seriesFound = seriesTotals.find(s2 => s2._id === s.externalId.toString());
+			const seriesFound = seriesTotals.find(s2 => s.externalId && s2._id === s.externalId.toString());
 
 			if (seriesFound) {
 				s.numTotal = seriesFound.total;
@@ -544,10 +544,12 @@ async function getPopular(event) {
 			const tmdbSeries = await Promise.all(promises);
 
 			for (let i = 0; i < tmdbSeries.length; i++) {
-				if (tmdbSeries[i].data.tv_results.length) {
-					tmdbSeries[i].data.tv_results[0].imdbId = nonAssetInfos[i].id;
-				} else if (tmdbSeries[i].data.movie_results.length) {
-					tmdbSeries[i].data.movie_results[0].imdbId = nonAssetInfos[i].id;
+				if (tmdbSeries[i].status === 200) {
+					if (tmdbSeries[i].data.tv_results.length) {
+						tmdbSeries[i].data.tv_results[0].imdbId = nonAssetInfos[i].id;
+					} else if (tmdbSeries[i].data.movie_results.length) {
+						tmdbSeries[i].data.movie_results[0].imdbId = nonAssetInfos[i].id;
+					}
 				}
 			}
 
@@ -562,10 +564,12 @@ async function getPopular(event) {
 					image = asset.image;
 				} else {
 					const seriesFound = tmdbSeries.find(s =>
-						s.data.tv_results.length
-							? s.data.tv_results[0].imdbId.toString() === infos[i].id
-							: s.data.movie_results.length
-							? s.data.movie_results[0].imdbId.toString() === infos[i].id
+						s.status === 200
+							? s.data.tv_results.length
+								? s.data.tv_results[0].imdbId.toString() === infos[i].id
+								: s.data.movie_results.length
+								? s.data.movie_results[0].imdbId.toString() === infos[i].id
+								: null
 							: null,
 					);
 

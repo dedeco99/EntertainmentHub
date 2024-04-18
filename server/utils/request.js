@@ -34,8 +34,8 @@ async function api({ method, url, data, headers = {} }) {
 		log.error(e.stack);
 
 		return {
-			status: e.response.status,
-			data: e.response.data,
+			status: e.response ? e.response.status : 500,
+			data: e.response ? e.response.data : null,
 		};
 	}
 }

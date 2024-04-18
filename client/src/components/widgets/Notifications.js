@@ -584,7 +584,7 @@ function Notifications({ height, wrapTitle }) {
 								/>
 							)}
 							{renderNotificationContent(notification)}
-							{!selection && renderNotificationAction(notification)}
+							{renderNotificationAction(notification)}
 						</ListItem>
 					))}
 				</AnimatedList>
@@ -625,7 +625,7 @@ function Notifications({ height, wrapTitle }) {
 			options = [{ name: translate("markAsRead"), onClick: handleHideNotification }];
 		}
 
-		if (selectedNotification.subscription) {
+		if (selectedNotification.subscription && selectedNotification.subscription.active) {
 			options.push({ name: "Edit Subscription", onClick: handleShowSubscriptionDetail });
 		}
 
