@@ -123,7 +123,6 @@ function Widgets() {
 	const [loading, setLoading] = useState(false);
 	const [openWidgetDetail, setOpenWidgetDetail] = useState(false);
 	const [rowHeight, setRowHeight] = useState(150);
-	const [layouts, setLayouts] = useState({});
 	const [selectedWidget, setSelectedWidget] = useState(null);
 	const [tabs, setTabs] = useState([{ name: "Ungrouped" }]);
 	const [selectedTab, setSelectedTab] = useState(0);
@@ -275,11 +274,6 @@ function Widgets() {
 		setRowHeight((containerWidth - margin[0] * (cols - 1)) / cols);
 	}
 
-	function handleLayoutChange(layout, newLayouts) {
-		// TODO Probably save layouts
-		setLayouts(newLayouts);
-	}
-
 	function handleChangeTab(e, tab) {
 		setSelectedTab(tab);
 	}
@@ -410,7 +404,8 @@ function Widgets() {
 			{widgets && widgets.length ? (
 				<ResponsiveGridLayout
 					className="layout"
-					breakpoints={{ xxl: 2000, xl: 1700, lg: 1200, md: 950, sm: 750, xs: 450, xxs: 0 }}
+					// screen size - 80px
+					breakpoints={{ xxl: 2480, xl: 1840, lg: 1200, md: 944, sm: 688, xs: 560, xxs: 0 }}
 					cols={{ xxl: 12, xl: 10, lg: 8, md: 6, sm: 5, xs: 3, xxs: 2 }}
 					isDraggable={editMode}
 					isResizable={editMode}
@@ -418,12 +413,9 @@ function Widgets() {
 					onResizeStop={handleEditWidget}
 					onWidthChange={handleWidthChange}
 					rowHeight={rowHeight}
-					layouts={layouts}
-					onLayoutChange={handleLayoutChange}
-					containerPadding={[0, 10]}
+					containerPadding={[0, 15]}
 					style={{
 						top: tabs.length <= 1 ? "-10px" : "0px",
-						marginRight: document.body.scrollHeight > document.body.clientHeight ? 15 : 0,
 					}}
 				>
 					{renderWidgets()}
